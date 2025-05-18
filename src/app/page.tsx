@@ -1,15 +1,26 @@
-import { SignedIn, SignedOut, SignOutButton, SignUpButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignOutButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
     <div>
       <SignedOut>
-        <SignUpButton/>
+        <SignUpButton>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 roudned"> 
+            Sign Up
+          </button>
+        </SignUpButton>
       </SignedOut>
 
+      <UserButton />
+
     <SignedIn>
-      <SignOutButton/>
+      <SignOutButton>
+      <button className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 roudned">
+          Sign Out
+       </button>
+
+      </SignOutButton>
     </SignedIn>
     </div>
-  );
+  ); 
 }
