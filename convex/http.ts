@@ -2,6 +2,9 @@ import { httpRouter } from "convex/server";
 import {httpAction} from "./_generated/server"
 import { Webhook } from "svix";
 import { WebhookEvent } from "@clerk/nextjs/server";
+import { syncUser } from "./users";
+
+import {api} from "./_generated/api";
 
 const http = httpRouter();
 
@@ -15,8 +18,8 @@ http.route({
         }
 
         const svix_id = request.headers.get("svix-id");
-        const svix_signature = request.headers.get("svix_signature");
-        const svix_timestamp = request.headers.get("svix_timestamp");
+        const svix_signature = request.headers.get("svix-signature");
+        const svix_timestamp = request.headers.get("svix-timestamp");
 
         if(!svix_id || !svix_signature || !svix_timestamp){
             return new Response("Error occured -- no svix headers", 
@@ -39,7 +42,7 @@ http.route({
         } catch (error) {
             console.error("Error verifying webhook:", error);
             return new Response("Error occured",{status:400})
-        }
+        }  
 
         const eventType = evt.type;
         if(eventType=="user.created"){
@@ -49,9 +52,14 @@ http.route({
             const name=`${first_name||''} ${last_name||''}`.trim();
 
             try {
-                //await ctx.runMutation(api.users.syncUser)
-                //save user to db
+                await ctx.runMutation(api.users.syncUser,{
+                    userId:id,
+                    email:email,
+                    name:name
+                })
+
             } catch (error) {
+                console.log("Error creating the user")
                 return new Response("Error creating user",{status:500});
             }
         }
